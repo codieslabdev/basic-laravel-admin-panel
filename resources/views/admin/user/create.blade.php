@@ -4,12 +4,12 @@
     </x-slot>
 
     <div>
-        <x-admin.breadcrumb href="{{route('user.index')}}" title="{{ __('Create user') }}">{{ __('<< Back to all users') }}</x-admin.breadcrumb>
+        <x-admin.breadcrumb href="{{route('admin.user.index')}}" title="{{ __('Create user') }}">{{ __('<< Back to all users') }}</x-admin.breadcrumb>
         <x-admin.form.errors />
     </div>
-    <div class="w-full py-2 bg-white overflow-hidden">
+    <div class="w-full py-2 overflow-hidden">
 
-        <form method="POST" action="{{ route('user.store') }}">
+        <form method="POST" action="{{ route('admin.user.store') }}">
         @csrf
 
             <div class="py-2">
@@ -42,7 +42,7 @@
             </div>
 
             <div class="py-2">
-                <x-admin.form.label for="password_confirmation" class="block font-medium text-sm text-gray-700{{$errors->has('password') ? 'text-red-400' : ''}}">{{ __('Password Confirmation') }}</x-admin.form.label>
+                <x-admin.form.label for="password_confirmation" class="block font-medium text-sm text-base-700{{$errors->has('password') ? 'text-red-400' : ''}}">{{ __('Password Confirmation') }}</x-admin.form.label>
 
                 <x-admin.form.input id="password_confirmation" class="{{$errors->has('password') ? 'border-red-400' : ''}}"
                                 type="password"
@@ -51,7 +51,7 @@
             </div>
 
             <div class="py-2">
-                <h3 class="inline-block text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200 py-4 block sm:inline-block flex">Roles</h3>
+                <h3 class="inline-block text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight py-4 block sm:inline-block flex">Roles</h3>
                 <div class="grid grid-cols-4 gap-4">
                     @forelse ($roles as $role)
                         <div class="col-span-4 sm:col-span-2 md:col-span-1">

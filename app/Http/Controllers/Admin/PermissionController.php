@@ -3,31 +3,31 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\StorePermissionRequest;
-use App\Http\Requests\Admin\UpdatePermissionRequest;
 use App\Models\Permission;
-use Illuminate\Http\Request;
+use BalajiDharma\LaravelAdminCore\Requests\StorePermissionRequest;
+use BalajiDharma\LaravelAdminCore\Requests\UpdatePermissionRequest;
 
 class PermissionController extends Controller
 {
-    function __construct()
+    public function __construct()
     {
-         $this->middleware('can:permission list', ['only' => ['index','show']]);
-         $this->middleware('can:permission create', ['only' => ['create','store']]);
-         $this->middleware('can:permission edit', ['only' => ['edit','update']]);
-         $this->middleware('can:permission delete', ['only' => ['destroy']]);
+        $this->middleware('can:permission list', ['only' => ['index', 'show']]);
+        $this->middleware('can:permission create', ['only' => ['create', 'store']]);
+        $this->middleware('can:permission edit', ['only' => ['edit', 'update']]);
+        $this->middleware('can:permission delete', ['only' => ['destroy']]);
     }
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {
         $permissions = (new Permission)->newQuery();
 
         if (request()->has('search')) {
-            $permissions->where('name', 'Like', '%' . request()->input('search') . '%');
+            $permissions->where('name', 'Like', '%'.request()->input('search').'%');
         }
 
         if (request()->query('sort')) {
@@ -42,16 +42,16 @@ class PermissionController extends Controller
             $permissions->latest();
         }
 
-        $permissions = $permissions->paginate(5);
+        $permissions = $permissions->paginate(config('admin.paginate.per_page'))
+            ->onEachSide(config('admin.paginate.each_side'));
 
-        return view('admin.permission.index',compact('permissions'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
+        return view('admin.permission.index', compact('permissions'));
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function create()
     {
@@ -61,65 +61,59 @@ class PermissionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\Admin\StorePermissionRequest  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StorePermissionRequest $request)
     {
         Permission::create($request->all());
 
-        return redirect()->route('permission.index')
-                        ->with('message', __('Permission created successfully.'));
+        return redirect()->route('admin.permission.index')
+            ->with('message', __('Permission created successfully.'));
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Permission  $permission
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function show(Permission $permission)
     {
-        return view('admin.permission.show',compact('permission'));
+        return view('admin.permission.show', compact('permission'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Permission  $permission
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function edit(Permission $permission)
     {
-        return view('admin.permission.edit',compact('permission'));
+        return view('admin.permission.edit', compact('permission'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\Admin\UpdatePermissionRequest  $request
-     * @param  \App\Models\Permission  $permission
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(UpdatePermissionRequest $request, Permission $permission)
     {
         $permission->update($request->all());
 
-        return redirect()->route('permission.index')
-                        ->with('message', __('Permission updated successfully.'));
+        return redirect()->route('admin.permission.index')
+            ->with('message', __('Permission updated successfully.'));
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Permission  $permission
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Permission $permission)
     {
         $permission->delete();
-    
-        return redirect()->route('permission.index')
-                        ->with('message', __('Permission deleted successfully'));
+
+        return redirect()->route('admin.permission.index')
+            ->with('message', __('Permission deleted successfully'));
     }
 }
